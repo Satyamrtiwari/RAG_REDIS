@@ -1,0 +1,10 @@
+python-dotenv
+langchain
+langchain-community
+langchain-core
+langchain-text-splitters
+langchain-mistralai
+chromadb
+beautifulsoup4
+pypdf
+redis
