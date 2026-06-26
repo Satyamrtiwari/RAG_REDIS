@@ -1,11 +1,98 @@
-# Python-generated files
+# ==========================
+# Python
+# ==========================
 __pycache__/
-*.py[oc]
+*.py[cod]
+*$py.class
+
+# Build / Packaging
 build/
 dist/
 wheels/
-*.egg-info
+*.egg-info/
+.eggs/
 
-# Virtual environments
-.venv
-.env 
+# ==========================
+# Virtual Environments
+# ==========================
+.venv/
+venv/
+env/
+ENV/
+
+# Environment Variables
+.env
+.env.*
+
+# ==========================
+# IDE
+# ==========================
+.vscode/
+.idea/
+
+# ==========================
+# OS Files
+# ==========================
+.DS_Store
+Thumbs.db
+
+# ==========================
+# Logs
+# ==========================
+*.log
+
+# ==========================
+# Testing
+# ==========================
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# ==========================
+# Type Checkers / Linters
+# ==========================
+.mypy_cache/
+.pyre/
+.pytype/
+.ruff_cache/
+
+# ==========================
+# Jupyter
+# ==========================
+.ipynb_checkpoints/
+
+# ==========================
+# ChromaDB
+# ==========================
+Chroma_deep_learning-DB/
+chroma_db/
+chroma/
+*.sqlite3
+
+# ==========================
+# UV
+# ==========================
+.uv/
+
+# ==========================
+# Local Data
+# ==========================
+data/
+outputs/
+temp/
+tmp/
+
+# ==========================
+# Secrets
+# ==========================
+*.pem
+*.key
+*.crt
+
+# ==========================
+# Editor
+# ==========================
+*.swp
+*.swo
