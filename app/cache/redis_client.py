@@ -1,6 +1,7 @@
 import redis
 
-from app.config import REDIS_HOST,  REDIS_PORT
+from app.config import REDIS_HOST, REDIS_PORT
+from app.utils.logger import logger
 
 redis_client = redis.Redis(
     host=REDIS_HOST,
@@ -10,7 +11,7 @@ redis_client = redis.Redis(
 
 try:
     redis_client.ping()
-    print("✅ Redis Connected")
+    logger.info("✅ Redis Connected")
 
-except Exception:
-    print("❌ Redis Not Available")
+except Exception as e:
+    logger.error(f"❌ Redis Not Available: {e}")

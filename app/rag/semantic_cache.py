@@ -1,18 +1,23 @@
 from datetime import datetime
-
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 from langchain_core.documents import Document
 
 from app.context import RequestContext
 from app.rag.embeddings import embedding_model
-from app.cache.cache_services import get_cache_key
+from app.utils.logger import logger
 
 
-semantic_cache = Chroma(
-    collection_name="semantic_cache",
-    persist_directory="Semantic_Cache_DB",
-    embedding_function=embedding_model
-)
+def get_semantic_cache_store(context: RequestContext) -> Chroma:
+    """
+    Returns an isolated Chroma collection per user and document context.
+    Collection format: semantic_cache_{user_id}_{document_id}
+    """
+    collection_name = f"semantic_cache_{context.user_id}_{context.document_id}"
+    return Chroma(
+        collection_name=collection_name,
+        persist_directory="Semantic_Cache_DB",
+        embedding_function=embedding_model
+    )
 
 
 def store_semantic_question(
@@ -20,28 +25,26 @@ def store_semantic_question(
     question: str
 ):
     """
-    Store a question inside semantic cache only if it
+    Store a question inside context-isolated semantic cache only if it
     doesn't already exist.
     """
+    from app.cache.cache_services import get_cache_key
 
+    cache_store = get_semantic_cache_store(context)
     redis_key = get_cache_key(context, question)
 
-    # Check whether a similar question already exists
-    existing = semantic_cache.similarity_search_with_relevance_scores(
+    # Check whether a similar question already exists in this context
+    existing = cache_store.similarity_search_with_relevance_scores(
         query=question,
         k=1
     )
 
     if existing:
-
         document, score = existing[0]
-
-        print(f"Duplicate Check Score : {score:.3f}")
+        logger.info(f"Duplicate Check Score : {score:.3f}")
 
         if score >= 0.99:
-
-            print("⚠ Question already exists in Semantic Cache")
-
+            logger.info("⚠️ Question already exists in Semantic Cache")
             return
 
     document = Document(
@@ -55,12 +58,8 @@ def store_semantic_question(
         }
     )
 
-    semantic_cache.add_documents([document])
-
-    print("✅ Stored in Semantic Cache")
-
-
-
+    cache_store.add_documents([document])
+    logger.info("✅ Stored in Semantic Cache")
 
 
 def search_semantic_cache(
@@ -69,11 +68,12 @@ def search_semantic_cache(
     threshold: float = 0.90
 ):
     """
-    Search semantic cache.
+    Search context-isolated semantic cache.
     Returns redis_key if a similar question exists.
     """
+    cache_store = get_semantic_cache_store(context)
 
-    results = semantic_cache.similarity_search_with_relevance_scores(
+    results = cache_store.similarity_search_with_relevance_scores(
         query=question,
         k=1
     )
@@ -82,33 +82,38 @@ def search_semantic_cache(
         return None
 
     document, score = results[0]
-
-    print(f"Semantic Score : {score:.3f}")
+    logger.info(f"Semantic Score : {score:.3f}")
 
     if score >= threshold:
-
-        print("✅ Semantic Cache Hit")
-
+        logger.info("✅ Semantic Cache Hit")
         return document.metadata["redis_key"]
 
     return None
 
 
-def delete_semantic_question(redis_key: str):
+def delete_semantic_question(context: RequestContext, redis_key: str):
     """
-    Delete a stale semantic cache entry.
+    Delete a stale semantic cache entry from the context's isolated collection.
     """
-
     try:
-
-        semantic_cache.delete(
+        cache_store = get_semantic_cache_store(context)
+        cache_store.delete(
             where={
                 "redis_key": redis_key
             }
         )
-
-        print("🗑 Removed stale semantic cache entry")
-
+        logger.info("🗑 Removed stale semantic cache entry")
     except Exception as e:
+        logger.error(f"Semantic Delete Error : {e}")
 
-        print(f"Semantic Delete Error : {e}")
+
+def clear_semantic_cache_for_context(context: RequestContext):
+    """
+    Purges/resets the entire semantic cache collection for a specific user and document.
+    """
+    try:
+        cache_store = get_semantic_cache_store(context)
+        cache_store.delete_collection()
+        logger.info(f"🧹 Purged Chroma semantic cache collection for {context.user_id}:{context.document_id}")
+    except Exception as e:
+        logger.warning(f"⚠️ Error purging Chroma semantic collection: {e}")

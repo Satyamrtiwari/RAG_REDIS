@@ -1,4 +1,4 @@
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 from app.config import CHROMA_DB_PATH
 from app.config import SEARCH_TYPE
 from app.config import SEARCH_KWARGS
