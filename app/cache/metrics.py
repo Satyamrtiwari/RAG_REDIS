@@ -1,35 +1,51 @@
 """
 Metrics and Observability Module for RAG + Redis Cache.
-Tracks exact hits, semantic hits, LLM calls, hit rates, and estimated cost/token savings.
+Tracks exact hits, semantic hits, LLM calls, hit rates, and estimated cost/token savings per user.
 """
 
+from typing import Optional
 from app.cache.redis_client import redis_client
 from app.utils.logger import logger
 
 STATS_PREFIX = "metrics:rag_cache"
 
 
-def record_event(event_type: str):
+def record_event(event_type: str, user_id: Optional[str] = "global"):
     """
-    Increments metrics counters in Redis.
+    Increments metrics counters in Redis per user and globally.
     event_type can be: 'exact_hit', 'semantic_hit', 'rag_call', 'refusal_skipped'
     """
+    clean_user = user_id.strip().lower() if user_id else "global"
     try:
-        redis_client.incr(f"{STATS_PREFIX}:{event_type}")
-        redis_client.incr(f"{STATS_PREFIX}:total_queries")
+        # User-scoped counters
+        redis_client.incr(f"{STATS_PREFIX}:{clean_user}:{event_type}")
+        redis_client.incr(f"{STATS_PREFIX}:{clean_user}:total_queries")
+        
+        # Global fallback counters
+        if clean_user != "global":
+            redis_client.incr(f"{STATS_PREFIX}:global:{event_type}")
+            redis_client.incr(f"{STATS_PREFIX}:global:total_queries")
     except Exception as e:
         logger.warning(f"⚠️ Metrics recording error: {e}")
 
 
-def get_cache_stats() -> dict:
+def get_cache_stats(user_id: Optional[str] = None) -> dict:
     """
-    Returns current cache performance statistics and analytics.
+    Returns cache performance statistics for a specific user_id or globally.
     """
+    clean_user = user_id.strip().lower() if user_id else "global"
     try:
-        total = int(redis_client.get(f"{STATS_PREFIX}:total_queries") or 0)
-        exact = int(redis_client.get(f"{STATS_PREFIX}:exact_hit") or 0)
-        semantic = int(redis_client.get(f"{STATS_PREFIX}:semantic_hit") or 0)
-        rag_calls = int(redis_client.get(f"{STATS_PREFIX}:rag_call") or 0)
+        total = int(redis_client.get(f"{STATS_PREFIX}:{clean_user}:total_queries") or 0)
+        exact = int(redis_client.get(f"{STATS_PREFIX}:{clean_user}:exact_hit") or 0)
+        semantic = int(redis_client.get(f"{STATS_PREFIX}:{clean_user}:semantic_hit") or 0)
+        rag_calls = int(redis_client.get(f"{STATS_PREFIX}:{clean_user}:rag_call") or 0)
+
+        # Fallback to global if user has zero queries and user_id was not explicitly requested
+        if total == 0 and not user_id:
+            total = int(redis_client.get(f"{STATS_PREFIX}:global:total_queries") or 0)
+            exact = int(redis_client.get(f"{STATS_PREFIX}:global:exact_hit") or 0)
+            semantic = int(redis_client.get(f"{STATS_PREFIX}:global:semantic_hit") or 0)
+            rag_calls = int(redis_client.get(f"{STATS_PREFIX}:global:rag_call") or 0)
 
         total_hits = exact + semantic
         hit_rate = (total_hits / total * 100) if total > 0 else 0.0
@@ -38,6 +54,7 @@ def get_cache_stats() -> dict:
         tokens_saved = total_hits * 2500
 
         return {
+            "user_id": clean_user,
             "total_queries": total,
             "exact_redis_hits": exact,
             "semantic_cache_hits": semantic,
@@ -50,6 +67,21 @@ def get_cache_stats() -> dict:
     except Exception as e:
         logger.warning(f"⚠️ Error reading cache stats: {e}")
         return {}
+
+
+def reset_cache_stats(user_id: Optional[str] = None):
+    """
+    Resets metrics counters to zero for a specific user_id or globally.
+    """
+    clean_user = user_id.strip().lower() if user_id else "global"
+    pattern = f"{STATS_PREFIX}:{clean_user}:*"
+    try:
+        keys = redis_client.keys(pattern)
+        if keys:
+            redis_client.delete(*keys)
+            logger.info(f"🧹 Reset metrics for user '{clean_user}' ({len(keys)} counters cleared)")
+    except Exception as e:
+        logger.warning(f"⚠️ Error resetting cache stats: {e}")
 
 
 def log_cache_stats():

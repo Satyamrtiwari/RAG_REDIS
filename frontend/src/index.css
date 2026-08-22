@@ -1,0 +1,103 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  /* Day Mode (Soft Blush / Light Pink Palette) */
+  --bg-primary: #fff5f7;
+  --bg-secondary: #fdf2f8;
+  --bg-card: #ffffff;
+  --bg-hover: #fce7f3;
+  --border-color: #fbcfe8;
+  --border-focus: #f472b6;
+  --text-primary: #1f2937;
+  --text-secondary: #4b5563;
+  --text-muted: #9ca3af;
+  --accent-pink: #ec4899;
+  --accent-pink-dark: #be185d;
+  --accent-pink-light: #fce7f3;
+  --pill-exact-bg: #fce7f3;
+  --pill-exact-text: #9d174d;
+  --pill-semantic-bg: #e0e7ff;
+  --pill-semantic-text: #3730a3;
+  --pill-rag-bg: #d1fae5;
+  --pill-rag-text: #065f46;
+  --shadow-sm: 0 1px 2px 0 rgba(244, 114, 182, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(244, 114, 182, 0.1);
+}
+
+[data-theme="dark"] {
+  /* Night Mode (Neutral Zinc / Slate Minimal Palette) */
+  --bg-primary: #09090b;
+  --bg-secondary: #121215;
+  --bg-card: #18181b;
+  --bg-hover: #27272a;
+  --border-color: #27272a;
+  --border-focus: #52525b;
+  --text-primary: #f4f4f5;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  --accent-pink: #ec4899;
+  --accent-pink-dark: #db2777;
+  --accent-pink-light: rgba(236, 72, 153, 0.15);
+  --pill-exact-bg: #27272a;
+  --pill-exact-text: #f472b6;
+  --pill-semantic-bg: #1e1b4b;
+  --pill-semantic-text: #818cf8;
+  --pill-rag-bg: #064e3b;
+  --pill-rag-text: #34d399;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.7);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.2s ease, color 0.2s ease;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+code, pre {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulseSlow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-pulse-slow {
+  animation: pulseSlow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}

@@ -24,66 +24,36 @@ ENV/
 .env
 .env.*
 
-
 # ==========================
-# IDE
+# IDE & System
 # ==========================
 .vscode/
 .idea/
-
-# ==========================
-# OS Files
-# ==========================
 .DS_Store
 Thumbs.db
-
-# ==========================
-# Logs
-# ==========================
 *.log
 
 # ==========================
-# Testing
-# ==========================
-.pytest_cache/
-.coverage
-htmlcov/
-.tox/
-.nox/
-
-# ==========================
-# Type Checkers / Linters
-# ==========================
-.mypy_cache/
-.pyre/
-.pytype/
-.ruff_cache/
-
-# ==========================
-# Jupyter
-# ==========================
-.ipynb_checkpoints/
-
-# ==========================
-# ChromaDB
+# ChromaDB & Uploads Data
 # ==========================
 Chroma_deep_learning-DB/
+Semantic_Cache_DB/
 chroma_db/
 chroma/
 *.sqlite3
-
-# ==========================
-# UV
-# ==========================
-.uv/
-
-# ==========================
-# Local Data
-# ==========================
+uploads/
 data/
 outputs/
 temp/
 tmp/
+scratch/
+
+# ==========================
+# Frontend Node Dependencies
+# ==========================
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
 
 # ==========================
 # Secrets
@@ -91,9 +61,3 @@ tmp/
 *.pem
 *.key
 *.crt
-
-# ==========================
-# Editor
-# ==========================
-*.swp
-*.swo

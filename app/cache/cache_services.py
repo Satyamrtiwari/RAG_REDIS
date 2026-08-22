@@ -32,14 +32,14 @@ def get_cached_answer(
     try:
         answer = redis_client.get(cache_key)
         if answer:
-            record_event("exact_hit")
+            record_event("exact_hit", user_id=context.user_id)
         return answer
     except Exception as e:
         logger.error(f"Redis Read Error : {e}")
         return None
 
 
-def get_cached_answer_by_key(redis_key: str):
+def get_cached_answer_by_key(redis_key: str, user_id: str = "global"):
     """
     Get answer directly using Redis key.
     Used by Semantic Cache.
@@ -47,7 +47,7 @@ def get_cached_answer_by_key(redis_key: str):
     try:
         answer = redis_client.get(redis_key)
         if answer:
-            record_event("semantic_hit")
+            record_event("semantic_hit", user_id=user_id)
         return answer
     except Exception as e:
         logger.error(f"Redis Read Error : {e}")

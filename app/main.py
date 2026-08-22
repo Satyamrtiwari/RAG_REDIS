@@ -91,7 +91,7 @@ def run_cli():
         # -------------------------------------------------
         # 3. Production RAG Pipeline (Query Rewriter + 2-Stage Reranking)
         # -------------------------------------------------
-        response = ask_rag(clean_input)
+        response = ask_rag(clean_input, context)
 
         # -------------------------------------------------
         # 4. Guardrail Cache Quality Check

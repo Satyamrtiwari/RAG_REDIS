@@ -33,10 +33,16 @@ splitter = RecursiveCharacterTextSplitter(
 
 chunks = splitter.split_documents(documents)
 
+# Attach user_id and document_id metadata for strict document isolation
+for chunk in chunks:
+    chunk.metadata["user_id"] = "satyam"
+    chunk.metadata["document_id"] = "deep_learning"
+    chunk.metadata["source_filename"] = os.path.basename(PDF_PATH)
+
 vector_store = Chroma.from_documents(
     documents=chunks,
     embedding=embedding_model,
     persist_directory=CHROMA_DB_PATH
 )
 
-logger.info("✅ Chroma database created successfully.")
+logger.info("✅ Chroma database created successfully with document_id and user_id metadata.")
