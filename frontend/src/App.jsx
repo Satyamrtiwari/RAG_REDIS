@@ -5,7 +5,7 @@ import ChatInterface from './components/ChatInterface';
 import AnalyticsPanel from './components/AnalyticsPanel';
 import WelcomeModal from './components/WelcomeModal';
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://rag-redis-backend.onrender.com';
 
 export default function App() {
   // Theme State ('light' soft pink day mode vs 'dark' night mode)

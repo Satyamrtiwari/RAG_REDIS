@@ -46,10 +46,10 @@ def health_check():
     except Exception:
         pass
 
-    groq_ok = bool(os.getenv("GROQ_API_KEY"))
-    mistral_ok = bool(os.getenv("MISTRAL_API_KEY"))
+    groq_ok = bool(os.getenv("GROQ_API_KEYS") or os.getenv("GROQ_API_KEY"))
+    mistral_ok = bool(os.getenv("MISTRAL_API_KEYS") or os.getenv("MISTRAL_API_KEY"))
 
-    status = "healthy" if (redis_ok and groq_ok and mistral_ok) else "degraded"
+    status = "healthy" if (redis_ok and (groq_ok or mistral_ok)) else "degraded"
 
     return HealthResponse(
         status=status,
