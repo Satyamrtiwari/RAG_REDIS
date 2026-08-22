@@ -19,6 +19,7 @@ export default function App() {
   const [documents, setDocuments] = useState([]);
   const [activeDocId, setActiveDocId] = useState('');
   const [isUploading, setIsUploading] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // Chat State
   const [messages, setMessages] = useState([]);
@@ -231,6 +232,7 @@ export default function App() {
         healthStatus={healthStatus}
         onToggleAnalytics={() => setIsAnalyticsOpen(!isAnalyticsOpen)}
         isAnalyticsOpen={isAnalyticsOpen}
+        onToggleMobileSidebar={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
       />
 
       {/* Main Content Workspace */}
@@ -243,6 +245,8 @@ export default function App() {
           onUploadDoc={handleUploadDoc}
           onDeleteDoc={handleDeleteDoc}
           isUploading={isUploading}
+          isMobileOpen={isMobileSidebarOpen}
+          onCloseMobile={() => setIsMobileSidebarOpen(false)}
         />
 
         {/* Chat Timeline Area */}

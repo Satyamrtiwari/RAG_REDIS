@@ -101,3 +101,19 @@ code, pre {
 .animate-pulse-slow {
   animation: pulseSlow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
+
+/* Hide on mobile utility */
+@media (max-width: 768px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+  .show-on-mobile {
+    display: flex !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .show-on-mobile {
+    display: none !important;
+  }
+}

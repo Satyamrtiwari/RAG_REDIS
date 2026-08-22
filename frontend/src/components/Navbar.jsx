@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sun, Moon, User, BarChart2, Zap } from 'lucide-react';
+import { Sun, Moon, User, BarChart2, Zap, Menu } from 'lucide-react';
 
 export default function Navbar({
   userId,
@@ -8,7 +8,8 @@ export default function Navbar({
   onToggleTheme,
   healthStatus,
   onToggleAnalytics,
-  isAnalyticsOpen
+  isAnalyticsOpen,
+  onToggleMobileSidebar
 }) {
   const isHealthy = healthStatus?.status === 'healthy';
 
@@ -20,16 +21,35 @@ export default function Navbar({
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: '0 1.5rem',
+      padding: '0 1rem',
       position: 'sticky',
       top: 0,
       zIndex: 100
     }}>
-      {/* Brand Title */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+      {/* Brand Title & Mobile Menu Trigger */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+        {/* Mobile Hamburger Button */}
+        <button
+          onClick={onToggleMobileSidebar}
+          className="show-on-mobile"
+          title="Open Document Hub"
+          style={{
+            padding: '0.4rem',
+            borderRadius: '8px',
+            border: '1px solid var(--border-color)',
+            backgroundColor: 'var(--bg-card)',
+            color: 'var(--text-primary)',
+            cursor: 'pointer',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          <Menu size={18} />
+        </button>
+
         <div style={{
-          width: '36px',
-          height: '36px',
+          width: '34px',
+          height: '34px',
           borderRadius: '8px',
           backgroundColor: 'var(--accent-pink)',
           color: '#ffffff',
@@ -37,60 +57,62 @@ export default function Navbar({
           alignItems: 'center',
           justifyContent: 'center'
         }}>
-          <Zap size={20} />
+          <Zap size={18} />
         </div>
         <div>
-          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.2 }}>
+          <h1 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.2 }}>
             DocuQuery <span style={{ color: 'var(--accent-pink)' }}>AI</span>
           </h1>
-          <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
-            Enterprise RAG & Redis Cache
+          <p style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>
+            Enterprise RAG Engine
           </p>
         </div>
       </div>
 
-      {/* Center / Right Control Cluster */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      {/* Control Cluster */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
         {/* Health Status Indicator */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '0.5rem',
-          padding: '0.35rem 0.75rem',
+          gap: '0.4rem',
+          padding: '0.3rem 0.6rem',
           borderRadius: '9999px',
           backgroundColor: 'var(--bg-card)',
           border: '1px solid var(--border-color)',
-          fontSize: '0.8rem',
+          fontSize: '0.75rem',
           color: 'var(--text-secondary)'
         }}>
           <span style={{
-            width: '8px',
-            height: '8px',
+            width: '7px',
+            height: '7px',
             borderRadius: '50%',
             backgroundColor: isHealthy ? '#10b981' : '#f59e0b'
           }} className="animate-pulse-slow" />
-          <span>{isHealthy ? 'System Status: OK' : 'Connecting...'}</span>
+          <span className="hide-on-mobile">{isHealthy ? 'System Status: OK' : 'Connecting...'}</span>
         </div>
 
         {/* Analytics Drawer Toggle */}
         <button
           onClick={onToggleAnalytics}
+          title="Live Analytics Metrics"
           style={{
-            padding: '0.45rem 0.85rem',
+            padding: '0.4rem 0.6rem',
             borderRadius: '8px',
             border: '1px solid var(--border-color)',
             backgroundColor: isAnalyticsOpen ? 'var(--accent-pink-light)' : 'var(--bg-card)',
             color: isAnalyticsOpen ? 'var(--accent-pink)' : 'var(--text-primary)',
-            fontSize: '0.85rem',
+            fontSize: '0.8rem',
             fontWeight: 500,
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
-            gap: '0.4rem',
+            gap: '0.3rem',
             transition: 'all 0.15s ease'
           }}
         >
-          <BarChart2 size={16} /> Live Metrics
+          <BarChart2 size={15} />
+          <span className="hide-on-mobile">Metrics</span>
         </button>
 
         {/* Theme Switcher Toggle */}
@@ -98,22 +120,22 @@ export default function Navbar({
           onClick={onToggleTheme}
           title="Toggle Day / Night Mode"
           style={{
-            padding: '0.45rem 0.85rem',
+            padding: '0.4rem 0.6rem',
             borderRadius: '8px',
             border: '1px solid var(--border-color)',
             backgroundColor: 'var(--bg-card)',
             color: 'var(--text-primary)',
-            fontSize: '0.85rem',
+            fontSize: '0.8rem',
             fontWeight: 500,
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
-            gap: '0.4rem',
+            gap: '0.3rem',
             transition: 'all 0.15s ease'
           }}
         >
-          {theme === 'light' ? <Sun size={16} style={{ color: '#eab308' }} /> : <Moon size={16} style={{ color: '#818cf8' }} />}
-          <span>{theme === 'light' ? 'Day Mode' : 'Night Mode'}</span>
+          {theme === 'light' ? <Sun size={15} style={{ color: '#eab308' }} /> : <Moon size={15} style={{ color: '#818cf8' }} />}
+          <span className="hide-on-mobile">{theme === 'light' ? 'Day' : 'Night'}</span>
         </button>
 
         {/* User Session Badge */}
@@ -121,21 +143,21 @@ export default function Navbar({
           onClick={onChangeName}
           title="Click to switch session user"
           style={{
-            padding: '0.45rem 0.85rem',
+            padding: '0.4rem 0.6rem',
             borderRadius: '8px',
             border: '1px solid var(--border-color)',
             backgroundColor: 'var(--bg-card)',
             color: 'var(--text-primary)',
-            fontSize: '0.85rem',
+            fontSize: '0.8rem',
             fontWeight: 600,
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
-            gap: '0.4rem',
+            gap: '0.3rem',
             transition: 'all 0.15s ease'
           }}
         >
-          <User size={16} style={{ color: 'var(--accent-pink)' }} />
+          <User size={15} style={{ color: 'var(--accent-pink)' }} />
           <span>{userId || 'Guest'}</span>
         </button>
       </div>

@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Upload, FileText, Trash2, CheckCircle2, FileCode, File } from 'lucide-react';
+import { Upload, FileText, Trash2, CheckCircle2, FileCode, File, X } from 'lucide-react';
 
 export default function DocumentSidebar({
   documents,
@@ -7,7 +7,9 @@ export default function DocumentSidebar({
   onSelectDoc,
   onUploadDoc,
   onDeleteDoc,
-  isUploading
+  isUploading,
+  isMobileOpen,
+  onCloseMobile
 }) {
   const fileInputRef = useRef(null);
   const [dragOver, setDragOver] = useState(false);
@@ -36,24 +38,35 @@ export default function DocumentSidebar({
     return <FileText size={18} />;
   };
 
-  return (
+  const sidebarContent = (
     <aside style={{
-      width: '320px',
+      width: '300px',
       borderRight: '1px solid var(--border-color)',
       backgroundColor: 'var(--bg-secondary)',
       display: 'flex',
       flexDirection: 'column',
-      height: 'calc(100vh - 64px)',
-      padding: '1.25rem'
+      height: '100%',
+      padding: '1.25rem',
+      boxShadow: isMobileOpen ? 'var(--shadow-md)' : 'none'
     }}>
-      {/* Sidebar Section Title */}
+      {/* Sidebar Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-        <h3 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        <h3 style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
           Document Hub
         </h3>
-        <span style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem', borderRadius: '9999px', backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', color: 'var(--text-muted)' }}>
-          {documents.length} Files
-        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <span style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem', borderRadius: '9999px', backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', color: 'var(--text-muted)' }}>
+            {documents.length} Files
+          </span>
+          {isMobileOpen && (
+            <button
+              onClick={onCloseMobile}
+              style={{ border: 'none', backgroundColor: 'transparent', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+            >
+              <X size={18} />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Upload Dropzone */}
@@ -81,23 +94,23 @@ export default function DocumentSidebar({
           style={{ display: 'none' }}
         />
         <div style={{
-          width: '40px',
-          height: '40px',
+          width: '38px',
+          height: '38px',
           borderRadius: '50%',
           backgroundColor: 'var(--accent-pink-light)',
           color: 'var(--accent-pink)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          margin: '0 auto 0.75rem auto'
+          margin: '0 auto 0.5rem auto'
         }}>
-          <Upload size={20} />
+          <Upload size={18} />
         </div>
         <p style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
           {isUploading ? 'Ingesting Document...' : 'Upload PDF, DOCX, or MD'}
         </p>
         <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-          Drag & drop or click to browse
+          Drag & drop or tap to browse
         </p>
       </div>
 
@@ -131,7 +144,10 @@ export default function DocumentSidebar({
             return (
               <div
                 key={doc.document_id}
-                onClick={() => onSelectDoc(doc.document_id)}
+                onClick={() => {
+                  onSelectDoc(doc.document_id);
+                  if (onCloseMobile) onCloseMobile();
+                }}
                 style={{
                   padding: '0.75rem',
                   borderRadius: '10px',
@@ -170,7 +186,7 @@ export default function DocumentSidebar({
                       e.stopPropagation();
                       onDeleteDoc(doc.document_id);
                     }}
-                    title="Delete document and purge cache"
+                    title="Delete document"
                     style={{
                       border: 'none',
                       backgroundColor: 'transparent',
@@ -191,5 +207,32 @@ export default function DocumentSidebar({
         )}
       </div>
     </aside>
+  );
+
+  return (
+    <>
+      {/* Desktop Fixed View */}
+      <div className="hide-on-mobile" style={{ height: 'calc(100vh - 64px)' }}>
+        {sidebarContent}
+      </div>
+
+      {/* Mobile Slide-Over Drawer Overlay */}
+      {isMobileOpen && (
+        <div style={{
+          position: 'fixed',
+          top: '64px',
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          zIndex: 90,
+          display: 'flex'
+        }} onClick={onCloseMobile}>
+          <div onClick={(e) => e.stopPropagation()} style={{ height: '100%' }} className="animate-fade-in">
+            {sidebarContent}
+          </div>
+        </div>
+      )}
+    </>
   );
 }
