@@ -19,3 +19,13 @@ services:
         sync: false
       - key: ALLOWED_ORIGINS
         value: "https://rag-redis.vercel.app,http://localhost:3000,http://localhost:3001,http://localhost:5173"
+      - key: SUPERADMIN_SECRET_KEY
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
+      - key: PINECONE_API_KEY
+        sync: false
+      - key: PINECONE_INDEX_NAME
+        value: "docuquery-enterprise"
